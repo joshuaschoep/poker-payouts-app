@@ -1,6 +1,5 @@
 import React from 'react';
-import { AppBar, IconButton, Toolbar, Typography, Link } from "@material-ui/core";
-import MenuIcon from '@material-ui/icons/Menu';
+import { AppBar, Toolbar, Typography, Link } from "@material-ui/core";
 
 
 const Navbar = () => {

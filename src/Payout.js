@@ -3,29 +3,38 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import Navbar from './Navbar';
 
-function getPayouts(players, buyin, round){
-    let money = players * buyin;
-    let remaining = money;
-    let paid = 0;
-    var payouts = [];
-    console.log('letsdoit', buyin)
-    while(remaining > 0){
-        let payout = money * Math.exp(-paid / 2) / 2;
-        payout -= payout % round;
-        console.log(payout);
-        payouts.push({position: paid + 1, payout: `$${payout}`});
-        remaining -= payout;
-        paid += 1;
+function paid(x){
+    return Math.floor((x - 1)/4 + 1);
+}
+
+function payout(p, n, r){
+    return (1 - p) / (1 - p ** n) * p ** (r - 1);
+}
+
+function roundTo(n, r){
+    return Math.round(n / r) * r;
+}
+
+function getPayouts(players, buyin, round, bias){
+    console.log("bias:", bias);
+    let paidPlayers = paid(players);
+    let payouts = []
+    for(let r = 1; r <= paidPlayers; r++){
+        let result = roundTo(buyin * players * payout(bias, paidPlayers, r), round);
+        if(result <= 0) return payouts;
+        payouts.push({position: r, payout: `$${result}`});
     }
     return payouts;
 }
 
 const Payout= (props) => {
     let state = props.location.state;
+    console.log(state);
     var results = getPayouts(
         parseInt(state.players), 
         parseInt(state.buy), 
-        parseInt(state.round)
+        parseInt(state.round),
+        state.bias
     )
 
     return (
